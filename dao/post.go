@@ -31,6 +31,6 @@ func SelectPosts() ([]model.Post, error) {
 	return posts, nil
 }
 func DeletePost(post model.Post) error {
-	_, err := DB.Exec("delete from  post where  id=?", post.Id)
+	_, err := DB.Exec("delete from  post where  id=? and username=?", post.Id, post.Username)
 	return err
 }

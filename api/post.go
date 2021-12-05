@@ -48,6 +48,7 @@ func deletePost(ctx *gin.Context) {
 	ID, err := strconv.Atoi(id)
 	if err != nil {
 		tool.RespErrorWithData(ctx, "删除失败")
+		fmt.Println("00")
 		fmt.Println(err)
 	}
 	iUsername, _ := ctx.Get("username")
@@ -60,6 +61,7 @@ func deletePost(ctx *gin.Context) {
 	if err != nil {
 		tool.RespErrorWithData(ctx, "删除失败")
 		fmt.Println(err)
+		fmt.Println("000")
 		return
 	}
 	tool.RespSuccessfulWithData(ctx, "删除成功")
