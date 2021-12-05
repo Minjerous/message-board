@@ -34,3 +34,15 @@ func DeletePost(post model.Post) error {
 	_, err := DB.Exec("delete from  post where  id=? and username=?", post.Id, post.Username)
 	return err
 }
+func SelectUsernameById(id string) (model.Post, error) {
+	post := model.Post{}
+	row := DB.QueryRow("SELECT username,id FROM post where id=? ", id)
+	if row.Err() != nil {
+		return post, row.Err()
+	}
+	err := row.Scan(&post.Username, &post.Id)
+	if err != nil {
+		return post, err
+	}
+	return post, nil
+}

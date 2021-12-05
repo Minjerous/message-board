@@ -1,6 +1,7 @@
 package service
 
 import (
+	"database/sql"
 	"message-board-demo/dao"
 	"message-board-demo/model"
 )
@@ -17,4 +18,18 @@ func AddPost(post model.Post) error {
 func DeletePost(post model.Post) error {
 	err := dao.DeletePost(post)
 	return err
+}
+func IsUsernameMachId(username, id string) (bool, error) {
+	post, err := dao.SelectUsernameById(id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil
+		}
+		return false, err
+	}
+	if username == post.Username {
+		return true, nil
+	} else {
+		return false, nil
+	}
 }

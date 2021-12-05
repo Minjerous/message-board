@@ -10,6 +10,7 @@ import (
 )
 
 const SaltSize = 16
+//加盐加密
 
 func HashWithSalted(plain string) string {
 	buf := make([]byte, SaltSize, SaltSize+sha1.Size)
@@ -24,6 +25,8 @@ func HashWithSalted(plain string) string {
 
 	return base64.URLEncoding.EncodeToString(h.Sum(buf))
 }
+
+//解密判断
 
 func Match(secret, plain string) bool {
 	data, _ := base64.URLEncoding.DecodeString(secret)

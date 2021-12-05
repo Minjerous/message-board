@@ -23,7 +23,7 @@ func login(ctx *gin.Context) {
 		return
 	}
 
-	ctx.SetCookie("username", username, 600000, "/", "", false, false)
+	ctx.SetCookie("username", username, 60, "/", "", false, false)
 	tool.RespSuccessful(ctx)
 }
 

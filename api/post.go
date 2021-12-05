@@ -17,13 +17,21 @@ func getPosts(ctx *gin.Context) {
 		tool.RespInternalError(ctx)
 		return
 	}
-
 	tool.RespSuccessfulWithData(ctx, posts)
 }
 
 func addPost(ctx *gin.Context) {
 	txt := ctx.PostForm("txt")
-
+	//判断是否含有敏感词
+	if tool.CheckIfSensitive(txt) {
+		tool.RespErrorWithData(ctx, "审核未通过，请注意你的言词")
+		return
+	}
+	//评论不能为空
+	if txt == "" {
+		tool.RespErrorWithData(ctx, "不可以发表空评论")
+		return
+	}
 	iUsername, _ := ctx.Get("username")
 	username := iUsername.(string)
 
@@ -33,7 +41,7 @@ func addPost(ctx *gin.Context) {
 		PostTime:   time.Now(),
 		UpdateTime: time.Now(),
 	}
-
+	//添加评论
 	err := service.AddPost(post)
 	if err != nil {
 		fmt.Println("add post err: ", err)
@@ -48,8 +56,8 @@ func deletePost(ctx *gin.Context) {
 	ID, err := strconv.Atoi(id)
 	if err != nil {
 		tool.RespErrorWithData(ctx, "删除失败")
-		fmt.Println("00")
 		fmt.Println(err)
+		return
 	}
 	iUsername, _ := ctx.Get("username")
 	username := iUsername.(string)
@@ -57,12 +65,22 @@ func deletePost(ctx *gin.Context) {
 		Id:       ID,
 		Username: username,
 	}
+	flag, err := service.IsUsernameMachId(username, id)
+	if err != nil {
+		tool.RespInternalError(ctx)
+		fmt.Print(err)
+		return
+	}
+	if !flag {
+		tool.RespErrorWithData(ctx, "没有权限")
+		return
+	}
 	err = service.DeletePost(post)
 	if err != nil {
 		tool.RespErrorWithData(ctx, "删除失败")
 		fmt.Println(err)
-		fmt.Println("000")
 		return
+	} else {
+		tool.RespSuccessfulWithData(ctx, "删除成功")
 	}
-	tool.RespSuccessfulWithData(ctx, "删除成功")
 }
