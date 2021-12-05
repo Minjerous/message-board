@@ -6,6 +6,7 @@ import (
 	"message-board-demo/model"
 	"message-board-demo/service"
 	"message-board-demo/tool"
+	"strconv"
 	"time"
 )
 
@@ -43,5 +44,23 @@ func addPost(ctx *gin.Context) {
 	tool.RespSuccessful(ctx)
 }
 func deletePost(ctx *gin.Context) {
-	//iUsername, _ := ctx.Get("username")
+	id := ctx.PostForm("id")
+	ID, err := strconv.Atoi(id)
+	if err != nil {
+		tool.RespErrorWithData(ctx, "删除失败")
+		fmt.Println(err)
+	}
+	iUsername, _ := ctx.Get("username")
+	username := iUsername.(string)
+	post := model.Post{
+		Id:       ID,
+		Username: username,
+	}
+	err = service.DeletePost(post)
+	if err != nil {
+		tool.RespErrorWithData(ctx, "删除失败")
+		fmt.Println(err)
+		return
+	}
+	tool.RespSuccessfulWithData(ctx, "删除成功")
 }

@@ -14,3 +14,7 @@ func AddPost(post model.Post) error {
 	err := dao.InsertPost(post)
 	return err
 }
+func DeletePost(post model.Post) error {
+	err := dao.DeletePost(post)
+	return err
+}
