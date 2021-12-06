@@ -13,3 +13,7 @@ func AddComment(comment model.Comment) error {
 	dao.AddCommentNum(comment)
 	return err
 }
+func GetComment() ([]model.Comment, error) {
+	comments, err := dao.SelectComments()
+	return comments, err
+}

@@ -42,3 +42,16 @@ func addComment(ctx *gin.Context) {
 	}
 	tool.RespSuccessfulWithData(ctx, "评论成功")
 }
+func getComment(ctx *gin.Context) {
+	comments, err := service.GetComment()
+	if err != nil {
+		fmt.Println("get comment  err: ", err)
+		tool.RespInternalError(ctx)
+		return
+	}
+	tool.RespSuccessfulWithData(ctx, comments)
+
+}
+func deleteComment(ctx *gin.Context) {
+
+}

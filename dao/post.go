@@ -15,7 +15,6 @@ func SelectPosts() ([]model.Post, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	defer rows.Close()
 	for rows.Next() {
 		var post model.Post
