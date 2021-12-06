@@ -46,3 +46,7 @@ func SelectUsernameById(id string) (model.Post, error) {
 	}
 	return post, nil
 }
+func AddCommentNum(comment model.Comment) error {
+	_, err := DB.Exec("update  post set  comment_num=comment_num+ 1  where id = ? ;", comment.PostID)
+	return err
+}
