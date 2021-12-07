@@ -41,6 +41,7 @@ func Register(user model.User) error {
 	err := dao.InsertUser(user)
 	return err
 }
+
 func Password(user model.User) error {
 	err := dao.UpdateUser(user)
 	return err

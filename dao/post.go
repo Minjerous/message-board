@@ -29,11 +29,13 @@ func SelectPosts() ([]model.Post, error) {
 
 	return posts, nil
 }
+
 func DeletePost(post model.Post) error {
 	_, err := DB.Exec("delete from  post where  id=? and username=?", post.Id, post.Username)
 	return err
 }
-func SelectUsernameById(id string) (model.Post, error) {
+
+func SelectUsernameByIdByPost(id string) (model.Post, error) {
 	post := model.Post{}
 	row := DB.QueryRow("SELECT username,id FROM post where id=? ", id)
 	if row.Err() != nil {
@@ -45,7 +47,13 @@ func SelectUsernameById(id string) (model.Post, error) {
 	}
 	return post, nil
 }
+
 func AddCommentNum(comment model.Comment) error {
 	_, err := DB.Exec("update  post set  comment_num=comment_num+ 1  where id = ? ;", comment.PostID)
+	return err
+}
+
+func MiuCommentNum(comment model.Comment) error {
+	_, err := DB.Exec("update  post set  comment_num=comment_num- 1  where id = ? ;", comment.PostID)
 	return err
 }

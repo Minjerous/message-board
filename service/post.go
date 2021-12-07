@@ -19,8 +19,8 @@ func DeletePost(post model.Post) error {
 	err := dao.DeletePost(post)
 	return err
 }
-func IsUsernameMachId(username, id string) (bool, error) {
-	post, err := dao.SelectUsernameById(id)
+func IsUsernameMachIdByPost(username, id string) (bool, error) {
+	post, err := dao.SelectUsernameByIdByPost(id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return false, nil

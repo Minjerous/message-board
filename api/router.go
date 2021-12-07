@@ -16,17 +16,17 @@ func InitRouter() {
 
 	postGroup := engine.Group("/post")
 	{
-		postGroup.Use(auth)
-		postGroup.POST("/addpost", addPost)
-		postGroup.DELETE("/deletePost", deletePost)
+		//游客状态下
+		postGroup.POST("/addpost", auth, addPost)
+		postGroup.DELETE("/deletePost", auth, deletePost)
 		postGroup.GET("/getpost", getPosts)
-		postGroup.GET("/:post_id")
 	}
 	//评论楼中楼
 	commentGroup := engine.Group("/comment")
 	{
 		commentGroup.Use(auth)
 		commentGroup.POST("/add", addComment)
+		postGroup.POST("/anonymous", anonymousComment)
 		commentGroup.DELETE("/delete", deleteComment)
 		commentGroup.GET("/get", getComment)
 	}
