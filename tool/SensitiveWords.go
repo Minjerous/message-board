@@ -13,6 +13,7 @@ func CheckIfSensitive(s string) bool {
 	}
 	return false
 }
+
 func hash(str string, m []int) int {
 	if len(str) == 0 {
 		return 0

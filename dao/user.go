@@ -6,6 +6,7 @@ func InsertUser(user model.User) error {
 	_, err := DB.Exec("INSERT INTO user(username, password)  values(?, ?);", user.Username, user.Password)
 	return err
 }
+
 func UpdateUser(user model.User) error {
 	_, err := DB.Exec("update user set password=? where username =?", user.Password, user.Username)
 	return err

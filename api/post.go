@@ -65,7 +65,7 @@ func deletePost(ctx *gin.Context) {
 		Id:       ID,
 		Username: username,
 	}
-	flag, err := service.IsUsernameMachId(username, id)
+	flag, err := service.IsUsernameMachIdByPost(username, id)
 	if err != nil {
 		tool.RespInternalError(ctx)
 		fmt.Print(err)
