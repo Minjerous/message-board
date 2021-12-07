@@ -91,7 +91,7 @@ func deleteComment(ctx *gin.Context) {
 }
 
 //丐版匿名评论  匿名评论可以直接在addComment 中获取一个评论状态但感觉测试麻烦 就早造了一个
-
+//
 func GetAnonymousComment(ctx *gin.Context) {
 	PostId := ctx.PostForm("post_id")
 	postId, _ := strconv.Atoi(PostId)

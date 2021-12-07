@@ -33,6 +33,8 @@ func GetComment() ([]model.Comment, error) {
 	return comments, err
 }
 
+//
+
 func IsUsernameMachIdByComment(username, id string) (bool, error) {
 	comment, err := dao.SelectUsernameByIdByComment(id)
 	if err != nil {

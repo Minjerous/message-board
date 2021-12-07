@@ -57,6 +57,7 @@ func SelectUsernameByIdByComment(id string) (model.Comment, error) {
 	return comment, nil
 }
 
+//
 //func DeleteComment(comment model.Comment) error {
 //	_, err := DB.Exec("delete from  comment where  id=? and username=?", comment.Id, comment.Username)
 //	return err
