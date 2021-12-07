@@ -6,8 +6,21 @@ import (
 	"message-board-demo/model"
 )
 
-func AddComment(comment model.Comment) error {
-	err := dao.InsertComment(comment)
+//匿名评论
+
+func AddNormalComment(comment model.Comment) error {
+	err := dao.InsertNormalComment(comment)
+	if err != nil {
+		return err
+	}
+	dao.AddCommentNum(comment)
+	return err
+}
+
+//匿名评论
+
+func AddAnonymousComment(comment model.Comment) error {
+	err := dao.InsertAnonymousComment(comment)
 	if err != nil {
 		return err
 	}

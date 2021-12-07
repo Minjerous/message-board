@@ -26,7 +26,7 @@ func InitRouter() {
 	{
 		commentGroup.Use(auth)
 		commentGroup.POST("/add", addComment)
-		postGroup.POST("/anonymous", anonymousComment)
+		postGroup.PUT("/anonymous", GetAnonymousComment)
 		commentGroup.DELETE("/delete", deleteComment)
 		commentGroup.GET("/get", getComment)
 	}

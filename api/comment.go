@@ -35,7 +35,7 @@ func addComment(ctx *gin.Context) {
 		PostTime:   time.Now(),
 		UpdateTime: time.Now(),
 	}
-	err := service.AddComment(comment)
+	err := service.AddNormalComment(comment)
 	if err != nil {
 		fmt.Println(err)
 		tool.RespInternalError(ctx)
@@ -43,6 +43,7 @@ func addComment(ctx *gin.Context) {
 	}
 	tool.RespSuccessfulWithData(ctx, "评论成功")
 }
+
 func getComment(ctx *gin.Context) {
 	comments, err := service.GetComment()
 	if err != nil {
@@ -50,11 +51,10 @@ func getComment(ctx *gin.Context) {
 		tool.RespInternalError(ctx)
 		return
 	}
-	tool.RespSuccessfulWithData(ctx, comments)
 
+	tool.RespSuccessfulWithData(ctx, comments)
 }
 
-//丐版匿名评论以后再改
 func deleteComment(ctx *gin.Context) {
 	id := ctx.PostForm("id")
 	ID, err := strconv.Atoi(id)
@@ -90,7 +90,9 @@ func deleteComment(ctx *gin.Context) {
 	}
 }
 
-func anonymousComment(ctx *gin.Context) {
+//丐版匿名评论  匿名评论可以直接在addComment 中获取一个评论状态但感觉测试麻烦 就早造了一个
+
+func GetAnonymousComment(ctx *gin.Context) {
 	PostId := ctx.PostForm("post_id")
 	postId, _ := strconv.Atoi(PostId)
 	txt := ctx.PostForm("txt")
@@ -100,19 +102,22 @@ func anonymousComment(ctx *gin.Context) {
 		return
 	}
 	//评论不能为空
+
 	if txt == "" {
 		tool.RespErrorWithData(ctx, "不可以发表空评论")
 		return
 	}
 
+	iUsername, _ := ctx.Get("username")
+	username := iUsername.(string)
 	comment := model.Comment{
 		PostID:     postId,
 		Txt:        txt,
-		Username:   "匿名评论",
+		Username:   username,
 		PostTime:   time.Now(),
 		UpdateTime: time.Now(),
 	}
-	err := service.AddComment(comment)
+	err := service.AddAnonymousComment(comment)
 	if err != nil {
 		fmt.Println(err)
 		tool.RespInternalError(ctx)
