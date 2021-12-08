@@ -8,23 +8,31 @@ import (
 //我觉得很憨  但我不想改了
 
 func InsertNormalComment(comment model.Comment) error {
-	_, err := DB.Exec("INSERT INTO comment(post_id,username, txt, post_time, update_time,pid_name) "+"values(?,?, ?, ?, ?,?);", comment.PostID, comment.Username, comment.Txt, comment.PostTime, comment.UpdateTime, comment.PidName)
+	sqlStr := "INSERT INTO comment(post_id,username, txt, post_time, update_time,pid_name) values(?,?, ?, ?, ?,?);"
+	Stmt, err := DB.Prepare(sqlStr)
+	_, err = Stmt.Exec(comment.PostID, comment.Username, comment.Txt, comment.PostTime, comment.UpdateTime, comment.PidName)
+	//_, err := DB.Exec("INSERT INTO comment(post_id,username, txt, post_time, update_time,pid_name) "+"values(?,?, ?, ?, ?,?);", comment.PostID, comment.Username, comment.Txt, comment.PostTime, comment.UpdateTime, comment.PidName)
 	return err
 }
 
 func InsertAnonymousComment(comment model.Comment) error {
 	InsertNormalComment(comment)
-	_, err := DB.Exec("update comment set name_status=1 where  id=? and username=?", comment.Id, comment.Username)
+	sqlStr := "update comment set name_status=1 where  id=? and username=?"
+	Stmt, err := DB.Prepare(sqlStr)
+	_, err = Stmt.Exec(comment.Id, comment.Username)
+	//_, err := DB.Exec("update comment set name_status=1 where  id=? and username=?", comment.Id, comment.Username)
 	return err
 }
 
 func SelectComments(PostId int) ([]model.Comment, error) {
 	var Comments []model.Comment
-	rows, err := DB.Query("select post_id,  id , username,   txt,      comment_num ,post_time, update_time ,comment_status , name_status ,pid_name FROM comment where post_id=?", PostId)
+	sqlStr := "select post_id,  id , username,   txt,      comment_num ,post_time, update_time ,comment_status , name_status ,pid_name FROM comment where post_id=?"
+	Stmt, err := DB.Prepare(sqlStr)
+	rows, err := Stmt.Query(PostId)
+	//rows, err := DB.Query("select post_id,  id , username,   txt,      comment_num ,post_time, update_time ,comment_status , name_status ,pid_name FROM comment where post_id=?", PostId)
 	if err != nil {
 		return nil, err
 	}
-
 	defer rows.Close()
 	for rows.Next() {
 		var Comment model.Comment
@@ -47,11 +55,15 @@ func SelectComments(PostId int) ([]model.Comment, error) {
 
 func SelectUsernameByIdByComment(id string) (model.Comment, error) {
 	comment := model.Comment{}
-	row := DB.QueryRow("SELECT username,id FROM comment where id=? ", id)
+
+	sqlStr := "SELECT username,id FROM comment where id=? "
+	Stmt, err := DB.Prepare(sqlStr)
+	row := Stmt.QueryRow(id)
+	//row := DB.QueryRow("SELECT username,id FROM comment where id=? ", id)
 	if row.Err() != nil {
 		return comment, row.Err()
 	}
-	err := row.Scan(&comment.Username, &comment.Id)
+	err = row.Scan(&comment.Username, &comment.Id)
 	if err != nil {
 		return comment, err
 	}
@@ -63,24 +75,36 @@ func SelectUsernameByIdByComment(id string) (model.Comment, error) {
 //	return err
 //}
 func DeleteComment(comment model.Comment) error {
-	_, err := DB.Exec("update comment set update_time=? ,comment_status=1 where  id=? and username=?", comment.UpdateTime, comment.Id, comment.Username)
+	sqlStr := "update comment set update_time=? ,comment_status=1 where  id=? and username=?"
+	Stmt, err := DB.Prepare(sqlStr)
+	_, err = Stmt.Exec(comment.UpdateTime, comment.Id, comment.Username)
+	//_, err := DB.Exec("update comment set update_time=? ,comment_status=1 where  id=? and username=?", comment.UpdateTime, comment.Id, comment.Username)
 	return err
 }
 
 func SelectCommentUserByIdByComment(Id int) (string, error) {
 	var Username string
-	row := DB.QueryRow("SELECT username FROM comment where id=? ", Id)
+	sqlStr := "SELECT username FROM comment where id=? "
+	Stmt, err := DB.Prepare(sqlStr)
+	row := Stmt.QueryRow(Id)
+	//row := DB.QueryRow("SELECT username FROM comment where id=? ", Id)
 	if row.Err() != nil {
 		return Username, row.Err()
 	}
-	err := row.Scan(&Username)
+	err = row.Scan(&Username)
 	if err != nil {
 		return Username, err
 	}
 	return Username, nil
 }
+
+//通过 comment 的id 来更新 comment_num
+
 func AddCommentNumByComment(comment model.Comment) error {
-	_, err := DB.Exec("update  comment  set  comment_num=comment_num+ 1  where id = ? ;", comment.Id)
+	sqlStr := "update  comment  set  comment_num=comment_num+ 1  where id = ? ;"
+	Stmt, err := DB.Prepare(sqlStr)
+	_, err = Stmt.Exec(comment.Id)
+	//_, err := DB.Exec("update  comment  set  comment_num=comment_num+ 1  where id = ? ;", comment.Id)
 	fmt.Print("11111")
 	return err
 }

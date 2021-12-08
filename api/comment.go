@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+//发表评论
 func addComment(ctx *gin.Context) {
 	//获取文章ID
 	PostId := ctx.PostForm("post_id")
@@ -51,6 +52,7 @@ func addComment(ctx *gin.Context) {
 	tool.RespSuccessfulWithData(ctx, "评论成功")
 }
 
+//查看post的评论
 func getComment(ctx *gin.Context) {
 	PostId := ctx.PostForm("post_id")
 	postId, _ := strconv.Atoi(PostId)
@@ -64,6 +66,7 @@ func getComment(ctx *gin.Context) {
 	tool.RespSuccessfulWithData(ctx, comments)
 }
 
+//删除评论
 func deleteComment(ctx *gin.Context) {
 	id := ctx.PostForm("id")
 	ID, err := strconv.Atoi(id)
@@ -108,8 +111,7 @@ func deleteComment(ctx *gin.Context) {
 	}
 }
 
-//
-
+//匿名评论
 func addAnonymousComment(ctx *gin.Context) {
 	PostId := ctx.PostForm("post_id")
 	postId, _ := strconv.Atoi(PostId)
@@ -125,7 +127,6 @@ func addAnonymousComment(ctx *gin.Context) {
 		tool.RespErrorWithData(ctx, "不可以发表空评论")
 		return
 	}
-
 	iUsername, _ := ctx.Get("username")
 	username := iUsername.(string)
 	comment := model.Comment{
@@ -144,6 +145,7 @@ func addAnonymousComment(ctx *gin.Context) {
 	tool.RespSuccessfulWithData(ctx, "评论成功")
 }
 
+//回复评论
 func AtCommentaddComment(ctx *gin.Context) {
 	//获取文章ID
 	id := ctx.PostForm("id")

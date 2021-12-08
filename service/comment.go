@@ -19,8 +19,14 @@ func AddNormalCommentAtComment(comment model.Comment) error {
 	if err != nil {
 		return err
 	}
-	dao.AddCommentNumByComment(comment)
-	dao.AddCommentNumByPost(comment)
+	err = dao.AddCommentNumByComment(comment)
+	if err != nil {
+		return err
+	}
+	err = dao.AddCommentNumByPost(comment)
+	if err != nil {
+		return err
+	}
 	return err
 }
 

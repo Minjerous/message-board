@@ -7,7 +7,7 @@ import (
 
 //预处理示范 防止sql注入 由于时间关系就其他dao层的就不更改了
 func InsertPost(post model.Post) error {
-	sqlStr := "INSERT INTO post(username, txt, post_time, update_time) " + "values(?, ?, ?, ?);"
+	sqlStr := "INSERT INTO post(username, txt, post_time, update_time) values(?, ?, ?, ?);"
 	stmt, err := DB.Prepare(sqlStr)
 	if err != nil {
 		return err
@@ -38,8 +38,12 @@ func SelectPosts() ([]model.Post, error) {
 }
 
 func DeletePost(post model.Post) error {
-	_, err := DB.Exec("delete from  post where  id=? and username=?", post.Id, post.Username)
-	_, err = DB.Exec("update  post set  update_time=? where id = ? ;", post.UpdateTime, post.Id)
+	sqlStr := "delete from  post where  id=? and username=?"
+	Stmt, err := DB.Prepare(sqlStr)
+	Stmt.Exec(sqlStr, sqlStr, post.Id, post.Username)
+	sqlStr2 := "update  post set  update_time=? where id = ? ;"
+	Stmt2, err := DB.Prepare(sqlStr2)
+	Stmt2.Exec(sqlStr2, post.UpdateTime, post.Id)
 	return err
 }
 

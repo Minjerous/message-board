@@ -5,6 +5,7 @@ import (
 	"message-board-demo/tool"
 )
 
+//cookie 验证登入
 func auth(ctx *gin.Context) {
 	username, err := ctx.Cookie("username")
 	if err != nil {

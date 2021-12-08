@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+//查看文章
 func getPosts(ctx *gin.Context) {
 	posts, err := service.GetPosts()
 	if err != nil {
@@ -20,6 +21,7 @@ func getPosts(ctx *gin.Context) {
 	tool.RespSuccessfulWithData(ctx, posts)
 }
 
+//增加文章
 func addPost(ctx *gin.Context) {
 	txt := ctx.PostForm("txt")
 	//判断是否含有敏感词
@@ -51,6 +53,8 @@ func addPost(ctx *gin.Context) {
 
 	tool.RespSuccessful(ctx)
 }
+
+//删除文章
 func deletePost(ctx *gin.Context) {
 	id := ctx.PostForm("id")
 	ID, err := strconv.Atoi(id)

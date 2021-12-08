@@ -8,9 +8,11 @@ import (
 	"message-board-demo/tool"
 )
 
+//登录
 func login(ctx *gin.Context) {
 	username := ctx.PostForm("username")
 	password := ctx.PostForm("password")
+
 	flag, err := service.IsPasswordCorrect(username, password)
 	if err != nil {
 		fmt.Println("judge password correct err: ", err)
@@ -27,6 +29,7 @@ func login(ctx *gin.Context) {
 	tool.RespSuccessful(ctx)
 }
 
+//注册
 func register(ctx *gin.Context) {
 	username := ctx.PostForm("username")
 	password := ctx.PostForm("password")
@@ -41,12 +44,14 @@ func register(ctx *gin.Context) {
 		return
 	}
 
+	//加盐加密
 	passWord := tool.HashWithSalted(password)
 	user := model.User{
 		Username: username,
 		Password: passWord,
 	}
 
+	//判断是否用户名已经被注册
 	flag, err := service.IsRepeatUsername(user.Username)
 	if err != nil {
 		fmt.Println(err)
@@ -69,6 +74,7 @@ func register(ctx *gin.Context) {
 	}
 }
 
+//修改密码
 func changePassword(ctx *gin.Context) {
 	username := ctx.PostForm("username")
 	password := ctx.PostForm("password")
