@@ -62,8 +62,9 @@ func deletePost(ctx *gin.Context) {
 	iUsername, _ := ctx.Get("username")
 	username := iUsername.(string)
 	post := model.Post{
-		Id:       ID,
-		Username: username,
+		Id:         ID,
+		Username:   username,
+		UpdateTime: time.Now(),
 	}
 	flag, err := service.IsUsernameMachIdByPost(username, id)
 	if err != nil {

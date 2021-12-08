@@ -6,14 +6,21 @@ import (
 	"message-board-demo/model"
 )
 
-//匿名评论
-
-func AddNormalComment(comment model.Comment) error {
+func AddNormalCommentAtPost(comment model.Comment) error {
 	err := dao.InsertNormalComment(comment)
 	if err != nil {
 		return err
 	}
-	dao.AddCommentNum(comment)
+	dao.AddCommentNumByPost(comment)
+	return err
+}
+func AddNormalCommentAtComment(comment model.Comment) error {
+	err := dao.InsertNormalComment(comment)
+	if err != nil {
+		return err
+	}
+	dao.AddCommentNumByComment(comment)
+	dao.AddCommentNumByPost(comment)
 	return err
 }
 
@@ -24,12 +31,12 @@ func AddAnonymousComment(comment model.Comment) error {
 	if err != nil {
 		return err
 	}
-	dao.AddCommentNum(comment)
+	dao.AddCommentNumByPost(comment)
 	return err
 }
 
-func GetComment() ([]model.Comment, error) {
-	comments, err := dao.SelectComments()
+func GetComment(PostId int) ([]model.Comment, error) {
+	comments, err := dao.SelectComments(PostId)
 	return comments, err
 }
 

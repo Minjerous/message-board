@@ -28,14 +28,21 @@ func addComment(ctx *gin.Context) {
 	}
 	iUsername, _ := ctx.Get("username")
 	username := iUsername.(string)
+	pidName, err := dao.SelectPostUserByPostIdByPost(postId)
+	if err != nil {
+		fmt.Println(err)
+		tool.RespInternalError(ctx)
+		return
+	}
 	comment := model.Comment{
 		PostID:     postId,
 		Txt:        txt,
 		Username:   username,
 		PostTime:   time.Now(),
 		UpdateTime: time.Now(),
+		PidName:    pidName,
 	}
-	err := service.AddNormalComment(comment)
+	err = service.AddNormalCommentAtPost(comment)
 	if err != nil {
 		fmt.Println(err)
 		tool.RespInternalError(ctx)
@@ -45,7 +52,9 @@ func addComment(ctx *gin.Context) {
 }
 
 func getComment(ctx *gin.Context) {
-	comments, err := service.GetComment()
+	PostId := ctx.PostForm("post_id")
+	postId, _ := strconv.Atoi(PostId)
+	comments, err := service.GetComment(postId)
 	if err != nil {
 		fmt.Println("get comment  err: ", err)
 		tool.RespInternalError(ctx)
@@ -63,12 +72,15 @@ func deleteComment(ctx *gin.Context) {
 		fmt.Println(err)
 		return
 	}
+
 	iUsername, _ := ctx.Get("username")
 	username := iUsername.(string)
 	comment := model.Comment{
-		Id:       ID,
-		Username: username,
+		Id:         ID,
+		Username:   username,
+		UpdateTime: time.Now(),
 	}
+
 	flag, err := service.IsUsernameMachIdByComment(username, id)
 	if err != nil {
 		tool.RespInternalError(ctx)
@@ -85,14 +97,20 @@ func deleteComment(ctx *gin.Context) {
 		fmt.Println(err)
 		return
 	} else {
-		dao.MiuCommentNum(comment)
+		c, err := dao.SelectPostIdByIdByComment(comment.Id)
+		if err != nil {
+			tool.RespInternalError(ctx)
+			fmt.Println("SelectPostIdByIdByComment is", err)
+			return
+		}
+		dao.MiuCommentNum(c)
 		tool.RespSuccessfulWithData(ctx, "删除成功")
 	}
 }
 
-//丐版匿名评论  匿名评论可以直接在addComment 中获取一个评论状态但感觉测试麻烦 就早造了一个
 //
-func GetAnonymousComment(ctx *gin.Context) {
+
+func addAnonymousComment(ctx *gin.Context) {
 	PostId := ctx.PostForm("post_id")
 	postId, _ := strconv.Atoi(PostId)
 	txt := ctx.PostForm("txt")
@@ -118,6 +136,48 @@ func GetAnonymousComment(ctx *gin.Context) {
 		UpdateTime: time.Now(),
 	}
 	err := service.AddAnonymousComment(comment)
+	if err != nil {
+		fmt.Println(err)
+		tool.RespInternalError(ctx)
+		return
+	}
+	tool.RespSuccessfulWithData(ctx, "评论成功")
+}
+
+func AtCommentaddComment(ctx *gin.Context) {
+	//获取文章ID
+	id := ctx.PostForm("id")
+	Id, _ := strconv.Atoi(id)
+	txt := ctx.PostForm("txt")
+	//判断是否含有敏感词
+	if tool.CheckIfSensitive(txt) {
+		tool.RespErrorWithData(ctx, "审核未通过，请注意你的言词")
+		return
+	}
+	//评论不能为空
+	if txt == "" {
+		tool.RespErrorWithData(ctx, "不可以发表空评论")
+		return
+	}
+	iUsername, _ := ctx.Get("username")
+	username := iUsername.(string)
+	pidName, err := dao.SelectCommentUserByIdByComment(Id)
+	c, err := dao.SelectPostIdByIdByComment(Id)
+	if err != nil {
+		fmt.Println(err)
+		tool.RespInternalError(ctx)
+		return
+	}
+	comment := model.Comment{
+		Txt:        txt,
+		Username:   username,
+		PostTime:   time.Now(),
+		UpdateTime: time.Now(),
+		PidName:    pidName,
+		PostID:     c.PostID,
+		Id:         Id,
+	}
+	err = service.AddNormalCommentAtComment(comment)
 	if err != nil {
 		fmt.Println(err)
 		tool.RespInternalError(ctx)
