@@ -146,7 +146,7 @@ func addAnonymousComment(ctx *gin.Context) {
 }
 
 //回复评论
-func AtCommentaddComment(ctx *gin.Context) {
+func atCommentAddComment(ctx *gin.Context) {
 	//获取文章ID
 	id := ctx.PostForm("id")
 	Id, _ := strconv.Atoi(id)
@@ -177,7 +177,7 @@ func AtCommentaddComment(ctx *gin.Context) {
 		UpdateTime: time.Now(),
 		PidName:    pidName,
 		PostID:     c.PostID,
-		Id:         Id,
+		PCommentId: Id,
 	}
 	err = service.AddNormalCommentAtComment(comment)
 	if err != nil {
@@ -186,4 +186,31 @@ func AtCommentaddComment(ctx *gin.Context) {
 		return
 	}
 	tool.RespSuccessfulWithData(ctx, "评论成功")
+}
+
+//获取单个评论的所有回复
+func getOneCommentAllResp(ctx *gin.Context) {
+	pid := ctx.PostForm("id")
+	id, _ := strconv.Atoi(pid)
+	Comments, err := service.GetOneComment(id)
+	if err != nil {
+		tool.RespInternalError(ctx)
+		fmt.Print("getOneCommentAllResp  is err", err)
+		return
+	}
+	//先获取指定的父类的信息
+	tool.RespSuccessfulWithData(ctx, Comments)
+
+	PContxt, err := service.GetPid(id)
+	if err != nil {
+		tool.RespInternalError(ctx)
+		fmt.Println("service.GetPid is err", err)
+		return
+	}
+	fmt.Println(PContxt)
+	err = service.CirCommentPrint(ctx, PContxt)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 }

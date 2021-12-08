@@ -2,6 +2,7 @@ package service
 
 import (
 	"database/sql"
+	"github.com/gin-gonic/gin"
 	"message-board-demo/dao"
 	"message-board-demo/model"
 )
@@ -19,10 +20,12 @@ func AddNormalCommentAtComment(comment model.Comment) error {
 	if err != nil {
 		return err
 	}
+	//增加评论的数量
 	err = dao.AddCommentNumByComment(comment)
 	if err != nil {
 		return err
 	}
+	//增加文章的评论数量
 	err = dao.AddCommentNumByPost(comment)
 	if err != nil {
 		return err
@@ -46,8 +49,6 @@ func GetComment(PostId int) ([]model.Comment, error) {
 	return comments, err
 }
 
-//
-
 func IsUsernameMachIdByComment(username, id string) (bool, error) {
 	comment, err := dao.SelectUsernameByIdByComment(id)
 	if err != nil {
@@ -65,5 +66,18 @@ func IsUsernameMachIdByComment(username, id string) (bool, error) {
 
 func DeleteComment(comment model.Comment) error {
 	err := dao.DeleteComment(comment)
+	return err
+}
+func GetOneComment(id int) ([]model.Comment, error) {
+	Comments, err := dao.GetOneComment(id)
+	return Comments, err
+}
+func GetPid(id int) (*model.ChildComment, error) {
+	ChildComment, err := dao.GetFatherComment(id)
+	return ChildComment, err
+}
+
+func CirCommentPrint(ctx *gin.Context, PComent *model.ChildComment) error {
+	err := dao.CirChildNodeComment(ctx, PComent)
 	return err
 }
