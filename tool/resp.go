@@ -30,9 +30,15 @@ func RespSuccessfulWithData(ctx *gin.Context, data interface{}) {
 		"data": data,
 	})
 }
-func RespAllComment(ctx *gin.Context, data interface{}) {
+func RespAllComments(ctx *gin.Context, data interface{}) {
 	ctx.JSON(http.StatusOK, gin.H{
-		"info": "成功",
-		"data": data,
+		"info":     "成功",
+		"Comments": data,
+	})
+}
+func RespAllPosts(ctx *gin.Context, data interface{}) {
+	ctx.JSON(http.StatusOK, gin.H{
+		"info":  "成功",
+		"Posts": data,
 	})
 }

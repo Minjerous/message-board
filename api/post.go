@@ -18,7 +18,7 @@ func getPosts(ctx *gin.Context) {
 		tool.RespInternalError(ctx)
 		return
 	}
-	tool.RespSuccessfulWithData(ctx, posts)
+	tool.RespAllPosts(ctx, posts)
 }
 
 //增加文章

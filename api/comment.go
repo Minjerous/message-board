@@ -63,7 +63,7 @@ func getComment(ctx *gin.Context) {
 		return
 	}
 
-	tool.RespSuccessfulWithData(ctx, comments)
+	tool.RespAllComments(ctx, comments)
 }
 
 //删除评论
@@ -198,19 +198,13 @@ func getOneCommentAllResp(ctx *gin.Context) {
 		fmt.Print("getOneCommentAllResp  is err", err)
 		return
 	}
-	//先获取指定的父类的信息
-	tool.RespSuccessfulWithData(ctx, Comments)
-
-	PContxt, err := service.GetPid(id)
+	tool.RespAllComments(ctx, Comments)
+	Comment, err := service.SelectCommentsByPidComment(id)
 	if err != nil {
 		tool.RespInternalError(ctx)
-		fmt.Println("service.GetPid is err", err)
+		fmt.Print("SelectCommentsByPidComment  is err", err)
 		return
 	}
-	fmt.Println(PContxt)
-	err = service.CirCommentPrint(ctx, PContxt)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	tool.RespAllComments(ctx, Comment)
+
 }

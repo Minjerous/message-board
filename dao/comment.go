@@ -2,7 +2,6 @@ package dao
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"message-board-demo/model"
 )
 
@@ -18,7 +17,7 @@ func InsertNormalComment(comment model.Comment) error {
 
 func InsertAnonymousComment(comment model.Comment) error {
 	InsertNormalComment(comment)
-	sqlStr := "update comment set name_status=1 where  id=? and username=?"
+	sqlStr := "update comment set name_status='ture' where  id=? and username=?"
 	Stmt, err := DB.Prepare(sqlStr)
 	_, err = Stmt.Exec(comment.Id, comment.Username)
 	//_, err := DB.Exec("update comment set name_status=1 where  id=? and username=?", comment.Id, comment.Username)
@@ -27,7 +26,7 @@ func InsertAnonymousComment(comment model.Comment) error {
 
 func SelectComments(PostId int) ([]model.Comment, error) {
 	var Comments []model.Comment
-	sqlStr := "select post_id,  id , username,   txt,      comment_num ,post_time, update_time ,comment_status , name_status ,pid_name FROM comment where post_id=?"
+	sqlStr := "select post_id,  id , username,   txt,      comment_num ,post_time, update_time ,comment_status , name_status ,pid_name,pid_comment FROM comment where post_id=?"
 	Stmt, err := DB.Prepare(sqlStr)
 	rows, err := Stmt.Query(PostId)
 	//rows, err := DB.Query("select post_id,  id , username,   txt,      comment_num ,post_time, update_time ,comment_status , name_status ,pid_name FROM comment where post_id=?", PostId)
@@ -38,16 +37,17 @@ func SelectComments(PostId int) ([]model.Comment, error) {
 	for rows.Next() {
 		var Comment model.Comment
 
-		err = rows.Scan(&Comment.PostID, &Comment.Id, &Comment.Username, &Comment.Txt, &Comment.CommentNum, &Comment.PostTime, &Comment.UpdateTime, &Comment.CommentStatus, &Comment.NameStatus, &Comment.PidName)
+		err = rows.Scan(&Comment.PostID, &Comment.Id, &Comment.Username, &Comment.Txt, &Comment.CommentNum, &Comment.PostTime, &Comment.UpdateTime, &Comment.CommentStatus, &Comment.NameStatus, &Comment.PidName, &Comment.PCommentId)
 		if err != nil {
 			return nil, err
 		}
 		if Comment.CommentStatus == 1 {
 			Comment.Txt = "该评论已删除"
 		}
-		if Comment.NameStatus == 1 {
+		if Comment.NameStatus == "true" {
 			Comment.Username = "匿名用户"
 		}
+
 		Comments = append(Comments, Comment)
 	}
 
@@ -107,14 +107,14 @@ func SelectCommentUserByIdByComment(Id int) (string, error) {
 func AddCommentNumByComment(comment model.Comment) error {
 	sqlStr := "update  comment  set  comment_num=comment_num+ 1  where id = ? ;"
 	Stmt, err := DB.Prepare(sqlStr)
-	_, err = Stmt.Exec(comment.Id)
+	_, err = Stmt.Exec(comment.PCommentId)
 	//_, err := DB.Exec("update  comment  set  comment_num=comment_num+ 1  where id = ? ;", comment.Id)
 	fmt.Print("11111")
 	return err
 }
 func GetOneComment(id int) ([]model.Comment, error) {
 	var comment []model.Comment
-	sqlStr := "select post_id,  id , username,   txt,      comment_num ,post_time, update_time ,comment_status , name_status ,pid_name FROM comment where post_id=?"
+	sqlStr := "select post_id,  id , username,   txt,      comment_num ,post_time, update_time ,comment_status , name_status ,pid_name ,pid_comment FROM comment where id=?"
 	Stmt, err := DB.Prepare(sqlStr)
 	rows := Stmt.QueryRow(id)
 	//rows, err := DB.Query("select post_id,  id , username,   txt,      comment_num ,post_time, update_time ,comment_status , name_status ,pid_name FROM comment where post_id=?", PostId)
@@ -128,7 +128,7 @@ func GetOneComment(id int) ([]model.Comment, error) {
 
 	var Comment model.Comment
 
-	err = rows.Scan(&Comment.PostID, &Comment.Id, &Comment.Username, &Comment.Txt, &Comment.CommentNum, &Comment.PostTime, &Comment.UpdateTime, &Comment.CommentStatus, &Comment.NameStatus, &Comment.PidName)
+	err = rows.Scan(&Comment.PostID, &Comment.Id, &Comment.Username, &Comment.Txt, &Comment.CommentNum, &Comment.PostTime, &Comment.UpdateTime, &Comment.CommentStatus, &Comment.NameStatus, &Comment.PidName, &Comment.PCommentId)
 
 	if err != nil {
 		return comment, err
@@ -137,73 +137,37 @@ func GetOneComment(id int) ([]model.Comment, error) {
 	if Comment.CommentStatus == 1 {
 		Comment.Txt = "该评论已删除"
 	}
-	if Comment.NameStatus == 1 {
+	if Comment.NameStatus == "true" {
 		Comment.Username = "匿名用户"
 	}
 	comment = append(comment, Comment)
 	return comment, nil
 }
-
-//返回ChildComment中父类的信息
-
-func GetFatherComment(id int) (*model.ChildComment, error) {
-	row := DB.QueryRow("select txt, username  from comment where id = ?", id)
-	var ChildComment model.ChildComment
-
-	err := row.Scan(&ChildComment.Ptxt, &ChildComment.Puser)
+func SelectCommentsByPidComment(PComment int) ([]model.Comment, error) {
+	var Comments []model.Comment
+	sqlStr := "select post_id,  id , username,   txt,      comment_num ,post_time, update_time ,comment_status , name_status ,pid_name,pid_comment FROM comment where pid_comment=?"
+	Stmt, err := DB.Prepare(sqlStr)
+	rows, err := Stmt.Query(PComment)
+	//rows, err := DB.Query("select post_id,  id , username,   txt,      comment_num ,post_time, update_time ,comment_status , name_status ,pid_name FROM comment where post_id=?", PostId)
 	if err != nil {
 		return nil, err
 	}
-	childComment := new(model.ChildComment)
-	childComment.Pid = id
-	childComment.Ptxt = ChildComment.Ptxt
-	childComment.Puser = ChildComment.Puser
-
-	return childComment, nil
-}
-
-//递归打印所有pid_comment 为当前指定的 id 所有Comment 即子类
-
-func CirChildNodeComment(ctx *gin.Context, Pcomment *model.ChildComment) error {
-	//查询所有pid 该pid的信息
-	var Comment model.ChildComment
-	sqlStr := "select id, txt, username, post_time,comment_num from comment where pid_comment= ?"
-	Stmt, err := DB.Prepare(sqlStr)
-	rows, err := Stmt.Query(Pcomment.CommentId)
-	if err != nil {
-		return err
-	}
-
 	defer rows.Close()
 	for rows.Next() {
-		err := rows.Scan(&Comment.CommentId, &Comment.CommentUser, &Comment.CommentTxt, &Comment.CommentTime, &Comment.CommentNum)
-		if err != nil {
-			return err
-		}
-		ChildComment := new(model.ChildComment)
-		ChildComment.Pid = Comment.CommentId
-		ChildComment.Ptxt = Comment.CommentTxt
-		ChildComment.Puser = Comment.CommentUser
+		var Comment model.Comment
 
-		if ChildComment.CommentId == Pcomment.CommentId {
-			continue
-		}
-		ctx.JSON(200, gin.H{
-			"Pid         ": Pcomment.Pid,
-			"Puser       ": Pcomment.Puser,
-			"Ptxt        ": Pcomment.Ptxt,
-			"CommentId   ": Comment.CommentId,
-			"CommentUser ": Comment.CommentUser,
-			"CommentTxt  ": Comment.CommentTxt,
-			"CommentTime ": Comment.CommentTime,
-			"CommentNum  ": Comment.CommentNum,
-		})
-
-		//递归处理
-		err = CirChildNodeComment(ctx, ChildComment)
+		err = rows.Scan(&Comment.PostID, &Comment.Id, &Comment.Username, &Comment.Txt, &Comment.CommentNum, &Comment.PostTime, &Comment.UpdateTime, &Comment.CommentStatus, &Comment.NameStatus, &Comment.PidName, &Comment.PCommentId)
 		if err != nil {
-			return err
+			return nil, err
 		}
+
+		if Comment.CommentStatus == 1 {
+			Comment.Txt = "该评论已删除"
+		}
+		if Comment.NameStatus == "true" {
+			Comment.Username = "匿名用户"
+		}
+		Comments = append(Comments, Comment)
 	}
-	return nil
+	return Comments, nil
 }

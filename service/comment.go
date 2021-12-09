@@ -2,7 +2,6 @@ package service
 
 import (
 	"database/sql"
-	"github.com/gin-gonic/gin"
 	"message-board-demo/dao"
 	"message-board-demo/model"
 )
@@ -72,12 +71,17 @@ func GetOneComment(id int) ([]model.Comment, error) {
 	Comments, err := dao.GetOneComment(id)
 	return Comments, err
 }
-func GetPid(id int) (*model.ChildComment, error) {
-	ChildComment, err := dao.GetFatherComment(id)
-	return ChildComment, err
+func SelectCommentsByPidComment(PComment int) ([]model.Comment, error) {
+	Comments, err := dao.SelectCommentsByPidComment(PComment)
+	return Comments, err
 }
 
-func CirCommentPrint(ctx *gin.Context, PComent *model.ChildComment) error {
-	err := dao.CirChildNodeComment(ctx, PComent)
-	return err
-}
+//func GetPid(id int) (*model.ChildComment, error) {
+//	ChildComment, err := dao.GetFatherComment(id)
+//	return ChildComment, err
+//}
+//
+//func CirCommentPrint(ctx *gin.Context, PComent *model.ChildComment) error {
+//	err := dao.CirChildNodeComment(ctx, PComent)
+//	return err
+//}
