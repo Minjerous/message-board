@@ -91,6 +91,6 @@ pid_name是对留言的user或者是评论的user,pid_comment 是回复评论的
 ● 对评论进行评论<br>
 ● 通过post_id 来查询留言下的所有评论不包括子评论<br>
 ● 通pid_comment 来查询评论下的所有回复<br>
-
 **第一个显示的为你要查询的comment的 id 后面显示其pid_comment=id 的评论**
 ![img.png](img.png)
+**pis:本来想做嵌套json 来体现套娃评论一级一级查询下去 但想了好久都做不了 写了递归一直报错 心态裂开只能这样了**
