@@ -14,8 +14,8 @@ func GenToken(username string) (string, error) {
 	c := model.MyClaims{
 		username,
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(TokenExpireDuration).Unix(), // 过期时间
-			Issuer:    "my-project",                               // 签发人
+			ExpiresAt: time.Now().Add(TokenExpireDuration).Unix(),
+			Issuer:    "message_board",
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
