@@ -6,13 +6,15 @@ import (
 	"message-board-demo/model"
 	"message-board-demo/service"
 	"message-board-demo/tool"
+	"net/http"
 )
 
 //登录
 func login(ctx *gin.Context) {
 	username := ctx.PostForm("username")
 	password := ctx.PostForm("password")
-
+	//var user model.User
+	//err := ctx.ShouldBind(&user)
 	flag, err := service.IsPasswordCorrect(username, password)
 	if err != nil {
 		fmt.Println("judge password correct err: ", err)
@@ -27,6 +29,36 @@ func login(ctx *gin.Context) {
 
 	ctx.SetCookie("username", username, 60, "/", "", false, false)
 	tool.RespSuccessful(ctx)
+}
+
+func UserLogin(ctx *gin.Context) {
+	username := ctx.PostForm("username")
+	password := ctx.PostForm("password")
+
+	//var user model.User
+	//err := ctx.ShouldBind(&user)
+	flag, err := service.IsPasswordCorrect(username, password)
+	if err != nil {
+		tool.RespInternalError(ctx)
+		fmt.Println("UserLogin is", err)
+		return
+	}
+	// 校验用户名和密码是否正确
+	if flag {
+		// 生成Token
+		tokenString, _ := tool.GenToken(username)
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": 2000,
+			"msg":  "success",
+			"data": gin.H{"token": tokenString},
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": 2002,
+		"msg":  "鉴权失败",
+	})
+	return
 }
 
 //注册
@@ -124,4 +156,32 @@ func changePassword(ctx *gin.Context) {
 		}
 		return
 	}
+}
+func authHandler(c *gin.Context) {
+	// 用户发送用户名和密码过来
+	var user model.User
+	err := c.ShouldBind(&user)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 2001,
+			"msg":  "无效的参数",
+		})
+		return
+	}
+	// 校验用户名和密码是否正确
+	if user.Username == "q1mi" && user.Password == "q1mi123" {
+		// 生成Token
+		tokenString, _ := tool.GenToken(user.Username)
+		c.JSON(http.StatusOK, gin.H{
+			"code": 2000,
+			"msg":  "success",
+			"data": gin.H{"token": tokenString},
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": 2002,
+		"msg":  "鉴权失败",
+	})
+	return
 }

@@ -5,9 +5,11 @@ import "github.com/gin-gonic/gin"
 func InitRouter() {
 	engine := gin.Default()
 
-	engine.POST("/login", login)
-	engine.POST("/register", register)
+	//这里是jwt鉴权使用的登录接口  由于token输入太麻烦就实现一处就ok cookie 比较方便
+	engine.POST("/jwtlogin", UserLogin)
 
+	engine.POST("/register", register)
+	engine.POST("/login", login)
 	userGroup := engine.Group("/user")
 	{
 		userGroup.Use(auth)
@@ -16,8 +18,8 @@ func InitRouter() {
 
 	postGroup := engine.Group("/post")
 	{
-
 		postGroup.POST("/addpost", auth, addPost)
+		//postGroup.POST("/addpost", JWTAuthMiddleware(), addPost) //Jwt 测试项目
 		postGroup.DELETE("/deletePost", auth, deletePost)
 		//游客状态下可以获取文章信息
 		postGroup.GET("/getpost", getPosts)
