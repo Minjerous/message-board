@@ -3,7 +3,6 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"message-board-demo/tool"
-	"net/http"
 	"strings"
 )
 
@@ -24,30 +23,21 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 
 		authHeader := c.Request.Header.Get("Authorization")
 		if authHeader == "" {
-			c.JSON(http.StatusOK, gin.H{
-				"code": 2003,
-				"msg":  "请求头中auth为空",
-			})
+			tool.RespErrorWithData(c, "请求头中auth为空")
 			c.Abort()
 			return
 		}
 		// 按空格分割
 		parts := strings.SplitN(authHeader, " ", 2)
 		if !(len(parts) == 2 && parts[0] == "Bearer") {
-			c.JSON(http.StatusOK, gin.H{
-				"code": 2004,
-				"msg":  "请求头中auth格式有误",
-			})
+			tool.RespErrorWithData(c, "请求头中auth格式有误")
 			c.Abort()
 			return
 		}
 
 		mc, err := tool.ParseToken(parts[1])
 		if err != nil {
-			c.JSON(http.StatusOK, gin.H{
-				"code": 2005,
-				"msg":  "无效的Token",
-			})
+			tool.RespErrorWithData(c, "无效的Token")
 			c.Abort()
 			return
 		}
