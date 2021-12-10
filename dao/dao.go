@@ -9,7 +9,7 @@ import (
 const (
 	driver   = "mysql"
 	username = "root"
-	password = "010425"
+	password = "123456"
 	host     = "localhost"
 	port     = "3306"
 	database = "message_borad"
