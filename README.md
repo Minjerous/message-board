@@ -87,6 +87,7 @@ pid_name是对留言的user或者是评论的user,pid_comment 是回复评论的
 ● 采用hash,提高匹配效率，审查评论或留言内容<br>
 ● 匿名评论<br>
 ● jwt鉴权<br>
+![img_1.png](img_1.png)
 ###Lv3
 ● 数据库设计 设计了评论的父类留言的id 即post_id，回复评论的id 即 pid_comment<br>
 ● 对评论进行评论<br>
