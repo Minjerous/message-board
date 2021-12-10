@@ -35,14 +35,14 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 			return
 		}
 
-		mc, err := tool.ParseToken(parts[1])
+		user, err := tool.ParseToken(parts[1])
 		if err != nil {
 			tool.RespErrorWithData(c, "无效的Token")
 			c.Abort()
 			return
 		}
 
-		c.Set("username", mc.Username)
+		c.Set("username", user.Username)
 		c.Next()
 	}
 }
