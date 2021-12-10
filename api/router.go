@@ -19,7 +19,7 @@ func InitRouter() {
 	postGroup := engine.Group("/post")
 	{
 		postGroup.POST("/addpost", auth, addPost)
-		//postGroup.POST("/addpost", JWTAuthMiddleware(), addPost) //Jwt 测试项目
+		postGroup.POST("/jwtaddpost", JWTAuthMiddleware(), addPost) //Jwt 测试项目
 		postGroup.DELETE("/deletePost", auth, deletePost)
 		//游客状态下可以获取文章信息
 		postGroup.GET("/getpost", getPosts)
