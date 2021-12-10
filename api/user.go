@@ -34,9 +34,6 @@ func login(ctx *gin.Context) {
 func UserLogin(ctx *gin.Context) {
 	username := ctx.PostForm("username")
 	password := ctx.PostForm("password")
-
-	//var user model.User
-	//err := ctx.ShouldBind(&user)
 	flag, err := service.IsPasswordCorrect(username, password)
 	if err != nil {
 		tool.RespInternalError(ctx)
@@ -47,17 +44,10 @@ func UserLogin(ctx *gin.Context) {
 	if flag {
 		// 生成Token
 		tokenString, _ := tool.GenToken(username)
-		ctx.JSON(http.StatusOK, gin.H{
-			"code": 2000,
-			"msg":  "success",
-			"data": gin.H{"token": tokenString},
-		})
+		tool.RespErrorWithData(ctx, tokenString)
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{
-		"code": 2002,
-		"msg":  "鉴权失败",
-	})
+	tool.RespErrorWithData(ctx, "鉴权失败")
 	return
 }
 
