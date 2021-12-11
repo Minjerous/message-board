@@ -1,5 +1,5 @@
 # message_board
-##user
+## user
 ```
 +----------+--------------+------+-----+---------+----------------+
 | Field    | Type         | Null | Key | Default | Extra          |
@@ -19,7 +19,7 @@ CREATE TABLE `user` (
 ```
 
 ---
-##post
+## post
 ```
 +-------------+--------------+------+-----+---------+----------------+
 | Field       | Type         | Null | Key | Default | Extra          |
@@ -41,7 +41,7 @@ CREATE TABLE `post` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 ```
-##comment
+## comment
 ```
 +----------------+--------------+------+-----+---------+----------------+
 | Field          | Type         | Null | Key | Default | Extra          |
@@ -76,19 +76,19 @@ CREATE TABLE `comment` (
 ---
 **其中post_id 是评论归属的留言，name_status是匿名状态<br>
 pid_name是对留言的user或者是评论的user,pid_comment 是回复评论的评论Id**
-##TOOL
-###Lv1
+## TOOl
+### Lv1
 ● 注册，登陆，修改密码<br>
 ● 发表留言，删除留言，查看所有留言，查看一个留言及其下属评论<br>
 ● 发表评论，删除评论(软删除)<br>
-###Lv2
+### Lv2
 ● 对密码加盐<br>
 ● 预加载，防sql注入<br>
 ● 采用hash,提高匹配效率，审查评论或留言内容<br>
 ● 匿名评论<br>
 ● jwt鉴权<br>
 ![img_1.png](img_1.png)
-###Lv3
+### Lv3
 ● 数据库设计 设计了评论的父类留言的id 即post_id，回复评论的id 即 pid_comment<br>
 ● 对评论进行评论<br>
 ● 通过post_id 来查询留言下的所有评论不包括子评论<br>
