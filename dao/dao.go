@@ -8,11 +8,11 @@ import (
 
 const (
 	driver   = "mysql"
-	username = "root"
+	username = "message_board"
 	password = "123456"
-	host     = "localhost"
+	host     = "106.55.225.88"
 	port     = "3306"
-	database = "message_borad"
+	database = "message_board"
 	charset  = "utf8"
 )
 
