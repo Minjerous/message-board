@@ -42,5 +42,5 @@ func InitRouter() {
 		commentGroup.GET("/get", getOneCommentAllResp)
 	}
 
-	engine.Run(":8090")
+	engine.Run(":9090")
 }
